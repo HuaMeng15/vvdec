@@ -342,7 +342,8 @@ Picture* PicListManager::getNextOutputPic( uint32_t numReorderPicsHighestTid,
   IF_DEBUG_PIC_ORDER( std::cout << "list:  " << m_cPicList << std::flush );
 //  IF_DEBUG_PIC_ORDER( std::cout << std::endl << "range: " << picRange << std::flush );
 
-  if( m_tuneInDelay <= numReorderPicsHighestTid + m_parallelDecInst + 1 && !bFlush )
+  // In real-time mode, bypass the tune-in delay to output frames immediately
+  if( !m_realTimeMode && m_tuneInDelay <= numReorderPicsHighestTid + m_parallelDecInst + 1 && !bFlush )
   {
     IF_DEBUG_PIC_ORDER( std::cout << std::endl );
     ++m_tuneInDelay;
@@ -378,7 +379,8 @@ Picture* PicListManager::getNextOutputPic( uint32_t numReorderPicsHighestTid,
   (void)dpbFullness;
 
   Picture * lowestPOCPic = nullptr;
-  if( numPicsNotYetDisplayed > numReorderPicsHighestTid + ( m_firstOutputPic ? MAX_OUT_OF_ORDER_PICS : 0 )
+  // In real-time mode, output frames immediately when they're ready, bypassing reorder buffer requirement
+  if( m_realTimeMode || numPicsNotYetDisplayed > numReorderPicsHighestTid + ( m_firstOutputPic ? MAX_OUT_OF_ORDER_PICS : 0 )
 //      || dpbFullness > maxDecPicBufferingHighestTid
       || bFlush )
   {

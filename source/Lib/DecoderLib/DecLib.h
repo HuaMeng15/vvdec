@@ -93,6 +93,7 @@ public:
   const char* getDecoderCapabilities() const { return m_sDecoderCapabilities.c_str(); }
 
   void     setMaxTemporalLayer( int layer ) { m_iMaxTemporalLayer = layer; }
+  void     setRealTimeMode( bool enable ) { m_picListManager.setRealTimeMode( enable ); }
 
   Picture* decode( InputNALUnit& nalu );
   Picture* flushPic();

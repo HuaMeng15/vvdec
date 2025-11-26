@@ -66,6 +66,7 @@ private:
   UserAllocator                      m_userAllocator;
   int                                m_tuneInDelay    = 0;
   bool                               m_firstOutputPic = true;
+  bool                               m_realTimeMode   = false;  // if true, output frames immediately without reorder buffer delay
   std::unordered_set<const Picture*> m_allRefPics;
 
 public:
@@ -73,6 +74,7 @@ public:
   ~PicListManager() { deleteBuffers(); }
 
   void create( int frameDelay, int decInstances, const UserAllocator& userAllocator );
+  void setRealTimeMode( bool enable ) { m_realTimeMode = enable; }
   void restart()
   {
     m_firstOutputPic = true;

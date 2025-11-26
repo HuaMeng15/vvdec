@@ -124,8 +124,24 @@ int VVDecImpl::init( const vvdecParams& params, vvdecCreateBufferCallback create
 
     initROM();
 
+    // Check for real-time mode
+    bool realTimeMode = params.enable_realtime;
+    int parseDelay = params.parseDelay;
+
+    // In real-time mode, force parseDelay to 0 for immediate output
+    if( realTimeMode && parseDelay != 0 )
+    {
+      parseDelay = 0;
+    }
+
     // create decoder class
-    m_cDecLib->create( params.threads, params.parseDelay, m_cUserAllocator, static_cast<ErrHandlingFlags>(params.errHandlingFlags) );
+    m_cDecLib->create( params.threads, parseDelay, m_cUserAllocator, static_cast<ErrHandlingFlags>(params.errHandlingFlags) );
+
+    // Enable real-time mode in PicListManager to bypass reorder buffer delays
+    if( realTimeMode )
+    {
+      m_cDecLib->setRealTimeMode( true );
+    }
 
     g_verbosity = MsgLevel( params.logLevel );
     g_context   = this;

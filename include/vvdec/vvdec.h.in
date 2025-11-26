@@ -484,8 +484,8 @@ typedef struct vvdecParams
   void                 *opaque;             // opaque pointer for private user data ( can be used to carry application specific data or contexts )
   vvdecErrHandlingFlags errHandlingFlags;   // set of flags defining how to handle bitstream errors
 
-  int32_t               reserved_1;         // reserved space for future parameters
-  int32_t               reserved_2;         // ...
+  bool                  enable_realtime;   // enable real-time mode: output frames immediately without reorder buffer delay ( default: false )
+  int32_t               reserved_2;         // reserved space for future parameters
   int32_t               reserved_3;         // ...
   int32_t               reserved_4;         // ...
 } vvdecParams;
