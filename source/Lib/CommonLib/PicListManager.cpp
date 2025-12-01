@@ -332,9 +332,30 @@ Picture* PicListManager::getNextOutputPic( uint32_t numReorderPicsHighestTid,
       seqStart = itPic;
     }
   }
+  
+  // In real-time mode, if foundOutputPic is false, do a second pass to check for any finished picture with neededForOutput
   if( !foundOutputPic )
   {
-    return nullptr;
+    if( m_realTimeMode )
+    {
+      // In real-time mode, check the entire list for any finished picture with neededForOutput
+      // If found, we'll search the entire list later, so just mark that we found one
+      for( auto itPic = m_cPicList.cbegin(); itPic != m_cPicList.cend(); ++itPic )
+      {
+        if( (*itPic)->neededForOutput && (*itPic)->progress >= Picture::finished )
+        {
+          foundOutputPic = true;
+          // In real-time mode, if we found a picture, search the entire list range
+          seqStart = m_cPicList.cbegin();
+          seqEnd = m_cPicList.cend();
+          break;
+        }
+      }
+    }
+    if( !foundOutputPic )
+    {
+      return nullptr;
+    }
   }
 
   PicListRange picRange{ seqStart, seqEnd };
@@ -384,7 +405,8 @@ Picture* PicListManager::getNextOutputPic( uint32_t numReorderPicsHighestTid,
 //      || dpbFullness > maxDecPicBufferingHighestTid
       || bFlush )
   {
-
+    // Output pictures marked as neededForOutput that are finished
+    // In real-time mode, we bypass the reorder buffer requirement, but still only output neededForOutput pictures
     for( auto& pcPic: picRange )
     {
       //CHECK( pcPic->fieldPic, "Interlaced not suported" );

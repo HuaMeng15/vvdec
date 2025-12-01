@@ -75,6 +75,7 @@ public:
 
   void create( int frameDelay, int decInstances, const UserAllocator& userAllocator );
   void setRealTimeMode( bool enable ) { m_realTimeMode = enable; }
+  bool isRealTimeMode() const { return m_realTimeMode; }
   void restart()
   {
     m_firstOutputPic = true;

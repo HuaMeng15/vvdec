@@ -181,6 +181,7 @@ Picture* DecLib::decode( InputNALUnit& nalu )
   PROFILER_SCOPE_AND_STAGE( 1, g_timeProfiler, P_NALU_SLICE_PIC_HL );
 
   bool newPic = false;
+  Picture* pcParsedPic = nullptr;
   if( m_iMaxTemporalLayer < 0 || nalu.m_temporalId <= m_iMaxTemporalLayer )
   {
     newPic = m_decLibParser.parse( nalu );
@@ -188,7 +189,7 @@ Picture* DecLib::decode( InputNALUnit& nalu )
 
   if( newPic )
   {
-    Picture* pcParsedPic = m_decLibParser.getNextDecodablePicture();
+    pcParsedPic = m_decLibParser.getNextDecodablePicture();
     if( pcParsedPic )
     {
       while( pcParsedPic->error || pcParsedPic->wasLost || pcParsedPic->parseDone.hasException() )
@@ -233,6 +234,15 @@ Picture* DecLib::decode( InputNALUnit& nalu )
 
   if( newPic || nalu.m_nalUnitType == NAL_UNIT_EOS )
   {
+    // In real-time mode, wait for pictures to finish before checking for output
+    // This ensures we can output frames immediately when they're ready
+    if( m_picListManager.isRealTimeMode() && newPic )
+    {
+      // Wait for all pending pictures to finish so we can output immediately
+      // This is necessary because reconPicture is asynchronous
+      blockAndFinishPictures();
+    }
+    
     Picture* outPic = getNextOutputPic( false );
     if( outPic )
     {
