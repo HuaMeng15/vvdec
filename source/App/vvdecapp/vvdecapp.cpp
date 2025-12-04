@@ -477,7 +477,7 @@ int main( int argc, char* argv[] )
 
   int iPrintPicHash = 0;
 
-  params.logLevel = VVDEC_NOTICE;
+  params.logLevel = VVDEC_DETAILS;
 
   if(  argc > 1 && (!strcmp( (const char*) argv[1], "--help" ) || !strcmp( (const char*) argv[1], "-help" )) )
   {
@@ -688,6 +688,9 @@ int main( int argc, char* argv[] )
     do
     {
       iRead = readBitstreamFromFile( &cInFile, accessUnit, false );
+      if (iRead > 0) {
+        printf("mhhh ------------- read %d bytes ------------- \n", iRead);
+      }
       //if( iRead > 0 )
       {
         vvdecNalType eNalType = vvdec_get_nal_unit_type( accessUnit );
@@ -755,6 +758,7 @@ int main( int argc, char* argv[] )
         {
           if( !bMultipleSlices )
           {
+            printf("mhhh Try again bTunedIn %d bIsSlice %d\n", bTunedIn, bIsSlice);
             if( params.logLevel >= VVDEC_VERBOSE ) *logStream << "vvdecapp [verbose]: more data needed to tune in" << std::endl;
             if( bTunedIn )
             {
@@ -1116,6 +1120,7 @@ static bool handle_frame( vvdecFrame*                   pcFrame,
       vvdecFrame* outputFrame = pcFrame;
 
       vvdecFrame tmpFrame;   // local frame storage for upscaling
+
       if( outputParams.upscaleOutput
           && pcFrame->picAttributes && pcFrame->picAttributes->seqInfo
           && pcFrame->width < pcFrame->picAttributes->seqInfo->maxWidth
@@ -1173,6 +1178,8 @@ static bool handle_frame( vvdecFrame*                   pcFrame,
           *logStream << "vvdecapp [error]: cannot write pyuv for picture seq. " <<  outputFrame->sequenceNumber << " width must be divisible by 8." << std::endl;
           return false;;
         }
+
+        printf("write yuv to file %llu\n", outputFrame->sequenceNumber);
 
         if( 0 != writeYUVToFile( outStream, outputFrame, outputParams.y4mOutput, outputParams.pyuvOutput ) )
         {

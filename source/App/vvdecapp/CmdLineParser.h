@@ -193,6 +193,7 @@ public:
     if( fullHelp )
     {
       std::cout << "\t\t [--parsedelay,-p  <int>    ] : maximal number of frames to read before decoding (default: <= 0 auto detection )" << std::endl;
+      std::cout << "\t\t [--realtime,-r             ] : enable real-time mode - output frames immediately without reorder buffer delay" << std::endl;
 #if defined( VVDEC_ARCH_X86 )
       std::cout << "\t\t [--simd <int>              ] : used simd extension (-1: auto, 0: scalar, 1: sse41, 2: sse42, 3: avx, 4: avx2) (default: -1)" << std::endl;
 #elif defined( VVDEC_ARCH_ARM)
@@ -311,6 +312,7 @@ public:
       int      err_handle_flags = 0;
       int      upscale_output   = 0;
       unsigned logLevel         = 0;
+      bool     realtime_flag    = false;
       if( parse_param( { "-b", "--bitstream" }, rcBitstreamFile ) ) /* In: input-file */
       {
         if( rcParams.logLevel > VVDEC_VERBOSE )
@@ -358,6 +360,13 @@ public:
       {
         if( rcParams.logLevel > VVDEC_VERBOSE )
           fprintf( stdout, "[parsedelay] : %d\n", rcParams.parseDelay );
+      }
+      else if( parse_param( { "-r", "--realtime" }, realtime_flag, true, true ) )
+      {
+        // Enable real-time mode: output frames immediately without reorder buffer delay
+        rcParams.enable_realtime = true;
+        if( rcParams.logLevel > VVDEC_VERBOSE )
+          fprintf( stdout, "[realtime]   : enabled\n" );
       }
       else if( parse_param( { "-dph", "--SEIDecodedPictureHash" }, riPrintPicHash, true, 1 ) )
       {
