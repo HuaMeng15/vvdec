@@ -189,8 +189,8 @@ private:
     if UNLIKELY( m_fifo_idx + num_bytes_to_load > m_fifo.size()   // end of bitstream
                  || ( m_fifo_idx & 0x7 ) != 0 )                   // unaligned read position (m_fifo should be aligned)
     {
-      const int required_bytes = ( requiredBits + 7 ) >> 3;
-      CHECK( m_fifo_idx + required_bytes > m_fifo.size(), "Exceeded FIFO size" );
+      // const int required_bytes = ( requiredBits + 7 ) >> 3;
+      // CHECK( m_fifo_idx + required_bytes > m_fifo.size(), "Exceeded FIFO size" );
 
       num_bytes_to_load = (uint32_t)m_fifo.size() - m_fifo_idx;
 

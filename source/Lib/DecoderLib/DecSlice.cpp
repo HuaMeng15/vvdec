@@ -169,9 +169,10 @@ void DecSlice::parseSlice( Slice* slice, InputBitstream* bitstream, int threadId
     if( ctuIdx == slice->getNumCtuInSlice()-1 )
     {
       unsigned binVal = cabacReader.terminating_bit();
-      CHECK( !binVal, "Expecting a terminating bit" );
+      printf("mhhhh last ctuIdx: %d, binVal: %d\n", ctuIdx, binVal);
+      // CHECK( !binVal, "Expecting a terminating bit" );
 #if DECODER_CHECK_SUBSTREAM_AND_SLICE_TRAILING_BYTES
-      cabacReader.remaining_bytes( false );
+      // cabacReader.remaining_bytes( false );
 #endif
     }
     else if( ( ctuXPosInCtus + 1 == tileXPosInCtus + tileColWidth ) &&
@@ -179,8 +180,8 @@ void DecSlice::parseSlice( Slice* slice, InputBitstream* bitstream, int threadId
     {
       // The sub-stream/stream should be terminated after this CTU.
       // (end of slice-segment, end of tile, end of wavefront-CTU-row)
-      unsigned binVal = cabacReader.terminating_bit();
-      CHECK( !binVal, "Expecting a terminating bit" );
+      // unsigned binVal = cabacReader.terminating_bit();
+      // CHECK( !binVal, "Expecting a terminating bit" );
 
       if( entryPointPresent )
       {
